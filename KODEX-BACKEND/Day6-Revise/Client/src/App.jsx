@@ -4,7 +4,7 @@ const App = () => {
   let HandleApi = async () => {
     try {
       let response = await axios.post("http://localhost:5000/api/users/getData", {
-        name: "Shivani Pathak",
+        name: "Swarup Pathak",
         email:"SwarupDas@gmail.com",
         password:'Sikkim',
         mobile:7318657035,
