@@ -1,1 +1,1 @@
-# Backend series  
+# This repository showcases my backend development journey, including practice, learning, and real-world implementations.
