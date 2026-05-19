@@ -5,4 +5,4 @@ const route = express.Router()
 
 route.post("/register",UserRegistration)
 route.post("/login",UserLogin)
-export default route
+export default route  

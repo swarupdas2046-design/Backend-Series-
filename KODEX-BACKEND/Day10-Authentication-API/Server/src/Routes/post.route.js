@@ -31,7 +31,6 @@ router.get("/post",
         next()
 },
 
-
 (req,res)=>{
    return res.status(200).json({
         massage:"Main araha hun Shivani"
