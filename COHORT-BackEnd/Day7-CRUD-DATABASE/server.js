@@ -1,8 +1,9 @@
 const app = require("./src/app");
 const mongoose = require("mongoose")
+require("dotenv").config()
 const Database = async()=>{
     try {
-        await mongoose.connect("mongodb+srv://SwarupDas:ofdWTor81gAt5cBT@cluster2.ctkyeo5.mongodb.net/New")
+        await mongoose.connect(process.env.Mongo_URL)
         console.log("MongoDb Connected Successfully");
     } catch (error) {
         console.log(error);
