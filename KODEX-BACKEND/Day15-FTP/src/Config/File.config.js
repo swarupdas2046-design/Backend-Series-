@@ -12,4 +12,4 @@ import {nanoid} from 'nanoid'
 
 const store = multer.memoryStorage()
 
-export const Send_file = multer({storage:store})
+export const Send_file = multer({storage:store}) 
