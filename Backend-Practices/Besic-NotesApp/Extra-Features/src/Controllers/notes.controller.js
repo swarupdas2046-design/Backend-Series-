@@ -107,6 +107,8 @@ export const UpdateNotes = async (req, res) => {
   }
 }
 
+// Delete Existing Notes 
+
 export const DeleteNotes =  async (req, res) => {
   try {
     const { id } = req.params;
