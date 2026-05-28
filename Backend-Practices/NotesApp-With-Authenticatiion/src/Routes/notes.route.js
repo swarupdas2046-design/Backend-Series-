@@ -8,6 +8,7 @@ import {
 import { NotesModel } from "../Models/notes.models.js";
 import { AuthMiddleware } from "../Middlewares/auth.middleware.js";
 
+// ----- Create Router -----
 const RouteR = express.Router();
 
 // create notes api

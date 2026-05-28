@@ -4,10 +4,10 @@ import { NotesModel } from "../Models/notes.models.js";
 export const CreateNotes = async (req, res) => {
   try {
     console.log("From Created notes Via Client --->", req.User.email);
-
+    // ---- get data from frontend ----
     const { title, description, category, priority } = req.body;
+    
     // check all the fields
-
     if (!title || !description || !priority) {
       return res.status(400).json({
         massage: "All Fields Are Required",

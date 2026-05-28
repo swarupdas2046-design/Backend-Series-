@@ -67,6 +67,7 @@ export const UserRegister = async(req,res)=>{
 
 export const UserLogin = async (req, res) => {
   try {
+    // ----- Get Email And Password From Request Body -----
     const { email, password } = req.body;
 
     // check All fields Are fill or not
@@ -105,9 +106,9 @@ export const UserLogin = async (req, res) => {
         expiresIn: "1hr",
       },
     );
-
+// ----- Store Token In Cookies -----
     res.cookie("token", Token);
-
+//----- Response -----
     return res.status(200).json({
       message: "User Login SuccessFully",
       user: IsExisted,
