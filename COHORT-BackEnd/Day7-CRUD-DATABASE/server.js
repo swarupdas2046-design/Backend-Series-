@@ -1,18 +1,11 @@
 const app = require("./src/app");
-const mongoose = require("mongoose")
+const Database = require("./src/config/db");
 require("dotenv").config()
-const Database = async()=>{
-    try {
-        await mongoose.connect(process.env.Mongo_URL)
-        console.log("MongoDb Connected Successfully");
-    } catch (error) {
-        console.log(error);
-    }
-}
+
 Database()
 
+const port = Number(process.env.PORT) || 5000
 
-
-app.listen(3000,()=>{
-    console.log(`server running successfully on port 3000`);
+app.listen(port,()=>{
+    console.log(`server running successfully on port`,port);
 })

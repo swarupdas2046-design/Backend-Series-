@@ -12,7 +12,6 @@ app.post('/data',(req,res)=>{
 app.get('/getData',(req,res)=>{
     res.send(data)
     // res.send('server created successfully on port 3000');
- 
 })
 
 app.listen(3000,()=>{
