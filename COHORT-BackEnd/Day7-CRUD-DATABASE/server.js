@@ -2,7 +2,7 @@ const app = require("./src/app");
 const Database = require("./src/config/db");
 require("dotenv").config()
 
-Database()
+await Database()
 
 const port = Number(process.env.PORT) || 5000
 
