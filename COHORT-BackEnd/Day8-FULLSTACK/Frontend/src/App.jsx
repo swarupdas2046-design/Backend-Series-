@@ -1,58 +1,49 @@
 import React, { useState } from "react";
-import axios from 'axios'
+import axios from "axios";
 import { useEffect } from "react";
 const App = () => {
- const [ALLdata, setALLdata] = useState([])
+  const [ALLdata, setALLdata] = useState([]);
 
-
-
- const getAllData = async()=>{
-  try {
-    const res = await axios.get("http://localhost:3000/getNotes")
+  const getAllData = async () => {
+    try {
+      const res = await axios.get("https://my-first-fullstack-651d.onrender.com/getNotes");
       console.log(res.data.ALLNotes);
-      setALLdata(res.data.ALLNotes)
-  } catch (error) {
-    console.log(error);
-    
-  }
+      setALLdata(res.data.ALLNotes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
- }
+  useEffect(() => {
+    getAllData();
+  }, []);
 
- useEffect(() => {
-  getAllData()
- }, [])
- 
-let HandleSubmit = async(e)=>{
-  e.preventDefault()
-  const title = e.target.title.value 
-  const description = e.target.description.value
-  try {
-    const res = await axios.post("http://localhost:3000/createNotes",{
-      title,
-      description
-    })
-    console.log(res);
-    getAllData()
-    e.target.reset()
-  } catch (error) {
-    console.log(error.message);
-  }
-  
-}
+  let HandleSubmit = async (e) => {
+    e.preventDefault();
+    const title = e.target.title.value;
+    const description = e.target.description.value;
+    try {
+      const res = await axios.post("https://my-first-fullstack-651d.onrender.com/createNotes", {
+        title,
+        description,
+      });
+      console.log(res);
+      getAllData();
+      e.target.reset();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
-let HandleDelete = async(id)=>{
-  try {
-    const res = await axios.delete(`http://localhost:3000/delete/${id}`)
-    console.log(res);
-    getAllData()
-  } catch (error) {
-    console.log(error.message);
-  }
-}
-
-
-
-
+  let HandleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`https://my-first-fullstack-651d.onrender.com/delete/${id}`);
+      console.log(res);
+      getAllData();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <main className="min-h-screen w-full bg-zinc-950 px-4 py-8 text-white sm:px-6 lg:px-10">
@@ -66,7 +57,7 @@ let HandleDelete = async(id)=>{
               Publish your idea
             </h1>
           </div>
-        
+
           <form onSubmit={HandleSubmit} className="grid gap-5">
             <div className="grid gap-5 md:grid-cols-2">
               <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-200">
@@ -98,32 +89,42 @@ let HandleDelete = async(id)=>{
         </section>
 
         <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {ALLdata.map((elem,idx)=>{
-            return <article key={idx} className="flex min-h-72 flex-col rounded-lg border border-white/10 bg-white p-5 text-zinc-950 shadow-xl shadow-black/20 transition duration-300 hover:-translate-y-1 hover:shadow-emerald-500/20">
-              <div className="mb-5 flex items-center justify-between gap-3">
-                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase text-emerald-700">
-                  Note
-                </span>
-              </div>
+          {ALLdata.map((elem, idx) => {
+            return (
+              <article
+                key={idx}
+                className="flex min-h-72 flex-col rounded-lg border border-white/10 bg-white p-5 text-zinc-950 shadow-xl shadow-black/20 transition duration-300 hover:-translate-y-1 hover:shadow-emerald-500/20"
+              >
+                <div className="mb-5 flex items-center justify-between gap-3">
+                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase text-emerald-700">
+                    Note
+                  </span>
+                </div>
 
-              <h2 className="text-2xl font-bold leading-tight text-zinc-950">{elem.title}</h2>
+                <h2 className="text-2xl font-bold leading-tight text-zinc-950">
+                  {elem.title}
+                </h2>
 
-              <p className="mt-4 flex-1 text-base leading-7 text-zinc-600">
-                {elem.description}
-              </p>
+                <p className="mt-4 flex-1 text-base leading-7 text-zinc-600">
+                  {elem.description}
+                </p>
 
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <button  className="rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm font-bold text-zinc-800 transition hover:border-emerald-400 hover:text-emerald-700">
-                  Edit
-                </button>
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  <button className="rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm font-bold text-zinc-800 transition hover:border-emerald-400 hover:text-emerald-700">
+                    Edit
+                  </button>
 
-                <button onClick={()=>{
-                  HandleDelete(elem._id)
-                }} className="rounded-lg bg-rose-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-rose-700">
-                  Delete
-                </button>
-              </div>
-            </article>
+                  <button
+                    onClick={() => {
+                      HandleDelete(elem._id);
+                    }}
+                    className="rounded-lg bg-rose-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-rose-700"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </article>
+            );
           })}
         </section>
       </div>
