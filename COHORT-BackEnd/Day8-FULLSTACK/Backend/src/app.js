@@ -59,15 +59,13 @@ app.get("/getNotes",async(req,res)=>{
     }
 })
 
-app.put("/update/:id",async(req,res)=>{
+app.patch("/update/:id",async(req,res)=>{
     try {
         const id = req.params.id
-        const {title,description,day} = req.body
+        const {description} = req.body
 
     const UpdatedNotes = await notesModel.findByIdAndUpdate(id,{
-        title,
         description,
-        day,
     },{
         new:true,
     })

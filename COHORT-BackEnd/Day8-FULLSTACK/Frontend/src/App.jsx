@@ -45,6 +45,21 @@ const App = () => {
     }
   };
 
+  let HandleUpdate = async(id)=>{
+    try {
+    const description = prompt("enter your description")
+    const response = await axios.patch(`https://my-first-fullstack-651d.onrender.com/update/${id}`,{
+          description
+        })
+        console.log(response);
+        getAllData()
+        
+    } catch (error) {
+      console.log(error.message);
+      
+    }
+  }
+
   return (
     <main className="min-h-screen w-full bg-zinc-950 px-4 py-8 text-white sm:px-6 lg:px-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
@@ -110,7 +125,7 @@ const App = () => {
                 </p>
 
                 <div className="mt-6 grid grid-cols-2 gap-3">
-                  <button className="rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm font-bold text-zinc-800 transition hover:border-emerald-400 hover:text-emerald-700">
+                  <button onClick={()=> HandleUpdate(elem._id)} className="rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm font-bold text-zinc-800 transition hover:border-emerald-400 hover:text-emerald-700">
                     Edit
                   </button>
 
