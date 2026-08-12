@@ -1,5 +1,5 @@
 import User from '../models/user.model.js'
-import { generateToken } from '../utils/token.util.js'
+import { GENERATE_RAW_TOKEN, generateToken } from '../utils/token.util.js'
 
 const sanitizeUser = (user) => ({
     id: user._id,
@@ -54,4 +54,26 @@ export const loginUser = async ({ email, password }) => {
         user: sanitizeUser(user),
         token
     }
+}
+
+
+export const forgotPassword_handler = async ({ email }) => {
+    if (!email) {
+        const error = new Error('Email is required')
+        error.statusCode = 400
+        throw error
+    }
+
+    const user = await User.findOne({ email })
+
+    if (!user) {
+        const error = new Error('User not found')
+        error.statusCode = 404
+        throw error
+    }
+
+    const RawToken = GENERATE_RAW_TOKEN(user._id)
+    const ResetPasswordLink = `http://localhost:3000/api/auth/reset-password/${RawToken}`
+
+
 }
