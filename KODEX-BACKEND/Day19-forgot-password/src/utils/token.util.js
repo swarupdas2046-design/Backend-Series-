@@ -9,3 +9,9 @@ export const generateToken = (userId) => {
 export const verifyToken = (token) => {
     return jwt.verify(token, process.env.JWT_SECRET)
 }
+
+export const GENERATE_RAW_TOKEN = (userId) => {
+    return jwt.sign({userId}, process.env.RAW_SECRET, {
+        expiresIn: "15M"
+    })
+}
