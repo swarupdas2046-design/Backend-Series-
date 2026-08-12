@@ -1,4 +1,4 @@
-import { loginUser, registerUser } from '../services/auth.service.js'
+import { forgotPassword_handler, loginUser, registerUser } from '../services/auth.service.js'
 
 export const register = async (req, res) => {
     try {
@@ -39,6 +39,39 @@ export const login = async (req, res) => {
         })
     } catch (error) {
         res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+export const forgotPassword = async (req, res) => {
+    try {
+    const response = await forgotPassword_handler(req.body)
+
+        return res.status(200).json({
+            success: true,
+            message: 'Password reset link sent successfully',
+        })
+        
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message
+        })
+    }
+
+
+}
+
+export const ResetPassword = async (req, res) => {
+    try {
+        const token = req.params.token
+
+        res.render("update.ejs")
+        
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
             success: false,
             message: error.message
         })
