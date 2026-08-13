@@ -1,4 +1,6 @@
+import SendEmail from '../config/mail.js'
 import User from '../models/user.model.js'
+import emailTemplate from '../utils/emailTemplate.js'
 import { GENERATE_RAW_TOKEN, generateToken } from '../utils/token.util.js'
 
 const sanitizeUser = (user) => ({
@@ -73,7 +75,13 @@ export const forgotPassword_handler = async ({ email }) => {
     }
 
     const RawToken = GENERATE_RAW_TOKEN(user._id)
+
     const ResetPasswordLink = `http://localhost:3000/api/auth/reset-password/${RawToken}`
 
+    const mailSyntax = emailTemplate(user.name,ResetPasswordLink)
 
+    await SendEmail(user.email,"Password Reset Link",mailSyntax)
+
+
+    return null
 }
