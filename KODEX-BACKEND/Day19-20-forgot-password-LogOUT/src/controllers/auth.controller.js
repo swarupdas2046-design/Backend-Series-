@@ -101,20 +101,40 @@ export const ResetPassword = async (req, res) => {
 export const UpdatePassword = async (req, res) => {
     try {
         const userid = req.params.params
-        const  password  = req.body.confirmPassword
+        const  Update_password  = req.body.confirmPassword
 
-        if (!password) {
+        if (!Update_password) {
             return res.status(400).json({
                 success: false,
                 message: 'Password is required'
             })
         }
-        const updatedUser = await User.findByIdAndUpdate(userid, { password }, { new: true })
+        if (Update_password.length<6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 6 characters'
+            })
+        }
+        // const updatedUser = await User.findByIdAndUpdate(userid, { password }, { new: true })
+
+        const Existed_User = await User.findById(userid)
+
+        if (!Existed_User) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            })
+        }
+
+        Existed_User.password = Update_password
+            
+        await Existed_User.save()
+
+
 
         return res.status(200).json({
             success: true,
             message: 'Password updated successfully',
-            updatedUser
         })
     }
     catch (error) {
