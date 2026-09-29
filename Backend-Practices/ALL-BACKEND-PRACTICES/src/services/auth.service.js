@@ -76,3 +76,24 @@ export const accessTokenService = async(refreshToken) => {
     }
     
 }
+
+export const GoogleService = async(profile)=>{
+    const email = profile.emails[0].value
+
+    if(!email) throw new ApiError("Email not Found",400);
+
+    const isExisted = await authModel.findOne({email})
+
+    if (isExisted){
+        return isExisted
+    }
+    const newUser = await authModel.create({
+        name:profile.displayName,
+        provider_id:profile.id,
+        provider:"google",
+        email
+    })
+
+    return newUser
+    
+}

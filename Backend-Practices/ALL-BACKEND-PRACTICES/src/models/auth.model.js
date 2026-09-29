@@ -20,6 +20,10 @@ const authSchema = new mongoose.Schema({
     refreshToken:{
         type:String,
     },
+    provider:{
+        type:String,
+        enum:["google","github","facebook"]
+    },
     provider_id:{
         type:String
     },
