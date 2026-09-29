@@ -1,6 +1,7 @@
 import express from "express";
 import { cloudFiles, sendFiles } from "../config/multer.js";
 import upload from "../config/imagekit.js";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 const postRouter = express.Router();
 
@@ -22,10 +23,10 @@ postRouter.post("/single", sendFiles.single("image"), (req, res) => {
   return res.send("Okay");
 });
 
-// this is for ImageKit 
+// this is for single file using ImageKit
 
 postRouter.post(
-  "/cloudSingle",
+  "/cloudSingle", authMiddleware,
   cloudFiles.single("image"),
   async (req, res) => {
     console.log("From postman :---->", req.file);
@@ -41,27 +42,25 @@ postRouter.post(
   },
 );
 
-postRouter.post("/cloudMulti",cloudFiles.array("images"), async(req,res)=>{
-  
-console.log("from Postman:---->",req.files);
+// this is for multiple files using ImageKit
 
-const fileData = req.files
+postRouter.post("/cloudMulti", cloudFiles.array("images"), async (req, res) => {
+  console.log("from Postman:---->", req.files);
 
-const response = await Promise.all(fileData.map((elem)=>{
-    return upload(elem.buffer,elem.originalname)
-}))
+  const fileData = req.files;
 
-const imageURL = response.map((elem)=> elem.url)
+  const response = await Promise.all(
+    fileData.map((elem) => {
+      return upload(elem.buffer, elem.originalname);
+    }),
+  );
 
+  const imageURL = response.map((elem) => elem.url);
 
-    return res.status(201).json({
-      message: "File Uploaded Successfully",
-      imageURL,
-    });
-
-
-})
-
-
+  return res.status(201).json({
+    message: "File Uploaded Successfully",
+    imageURL,
+  });
+});
 
 export default postRouter;
