@@ -23,6 +23,7 @@
     "mongoose": "^9.10.2",
     "multer": "^2.4.0",
     "nanoid": "^6.0.1",
+    "nodemailer": "^10.0.13",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0"
   }
