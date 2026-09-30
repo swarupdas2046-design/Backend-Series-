@@ -36,6 +36,10 @@ app.get("/", (req, res) => {
     res.render("index.ejs",{data:[{title:"Polo"},{title:"Kalua"},{title:"LOLO"}]})
 })
 
+app.get("/api/forget", (req, res) => {
+    res.render("forget.ejs")
+})
+
 
 app.use("/api/auth", authRouter);
 
