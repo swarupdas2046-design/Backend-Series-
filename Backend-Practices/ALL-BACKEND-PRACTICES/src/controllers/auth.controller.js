@@ -1,91 +1,145 @@
-import { accessTokenService, loginService, registerService } from "../services/auth.service.js";
+import authModel from "../models/auth.model.js";
+import {
+  accessTokenService,
+  forgotService,
+  loginService,
+  registerService,
+} from "../services/auth.service.js";
+import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import { GENERATE_ACCESS_TOKEN, GENERATE_REFRESH_TOKEN } from "../utils/token.js";
+import {
+  GENERATE_ACCESS_TOKEN,
+  GENERATE_REFRESH_TOKEN,
+} from "../utils/token.js";
+import jwt from "jsonwebtoken";
+const userData = (user) => {
+  return {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
+};
 
-const userData = (user)=>{
-    return {
-        _id:user._id,
-        name:user.name,
-        email:user.email,
-        createdAt:user.createdAt,
-        updatedAt:user.updatedAt
-    }
-}
+export const registerController = asyncHandler(async (req, res) => {
+  const { AccessToken, RefreshToken, newUser } = await registerService(
+    req.body,
+  );
 
-export const registerController = asyncHandler(async(req, res) => {
-    const {AccessToken,RefreshToken,newUser} = await registerService(req.body)
+  res.cookie("accessToken", AccessToken, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
+  res.cookie("refreshToken", RefreshToken, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  });
 
-    res.cookie("accessToken",AccessToken,{
-        httpOnly:true,
-        secure:true,
-        maxAge:15*60*1000 // 15 minutes
-    })
-    res.cookie("refreshToken",RefreshToken,{
-        httpOnly:true,
-        secure:true,
-        maxAge:24*60*60*1000 // 24 hours
-    })
+  return res
+    .status(201)
+    .json(new ApiResponse("User Registered Successfully", userData(newUser)));
+});
 
-    return  res.status(201).json(new ApiResponse("User Registered Successfully",userData(newUser)))
-})
+export const loginController = asyncHandler(async (req, res) => {
+  const { AccessToken, RefreshToken, user } = await loginService(req.body);
 
-export const loginController = asyncHandler(async(req, res) => {
-    const {AccessToken,RefreshToken,user} = await loginService(req.body)
+  res.cookie("accessToken", AccessToken, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
+  res.cookie("refreshToken", RefreshToken, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  });
 
-    res.cookie("accessToken",AccessToken,{
-        httpOnly:true,
-        secure:true,
-        maxAge:15*60*1000 // 15 minutes
-    })
-    res.cookie("refreshToken",RefreshToken,{
-        httpOnly:true,
-        secure:true,
-        maxAge:24*60*60*1000 // 24 hours
-    })
+  return res
+    .status(200)
+    .json(new ApiResponse("User Logged In Successfully", userData(user)));
+});
 
-    return  res.status(200).json(new ApiResponse("User Logged In Successfully",userData(user)))
+export const GoogleController = asyncHandler(async (req, res) => {
+  console.log("from Google :--->", req.user);
+  const user = req.user;
 
-})
+  const AccessToken = GENERATE_ACCESS_TOKEN(user._id);
+  const RefreshToken = GENERATE_REFRESH_TOKEN(user._id);
 
+  user.refreshToken = RefreshToken;
+  await user.save();
 
-export const GoogleController = asyncHandler(  async(req, res) => {
-    console.log("from Google :--->", req.user);
-    const user = req.user
+  res.cookie("accessToken", AccessToken, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
+  res.cookie("refreshToken", RefreshToken, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  });
 
-    const AccessToken = GENERATE_ACCESS_TOKEN(user._id)
-    const RefreshToken = GENERATE_REFRESH_TOKEN(user._id)
+  return res
+    .status(200)
+    .json(new ApiResponse("User Logged In Successfully", userData(user)));
+});
 
-    user.refreshToken = RefreshToken
-    await user.save()
+export const accessTokenController = asyncHandler(async (req, res) => {
+  const { AccessToken, user } = await accessTokenService(
+    req.cookies.refreshToken,
+  );
 
-    res.cookie("accessToken",AccessToken,{
-        httpOnly:true,
-        secure:true,
-        maxAge:15*60*1000 // 15 minutes
-    })
-    res.cookie("refreshToken",RefreshToken,{
-        httpOnly:true,
-        secure:true,
-        maxAge:24*60*60*1000 // 24 hours
-    })
+  res.cookie("accessToken", AccessToken, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
 
-    return res.status(200).json(new ApiResponse("User Logged In Successfully",userData(user)))
+  return res
+    .status(200)
+    .json(new ApiResponse("refresh Successfully", userData(user)));
+});
 
+export const forgotPassController = asyncHandler(async (req, res) => {
+  const result = await forgotService(req.body);
+  return res.status(200).json(new ApiResponse("Please Check Your Email"));
+});
 
-  })
+export const resetPasswordController = asyncHandler(async (req, res) => {
+  const token = req.params.token;
 
+  const decode = jwt.verify(token, process.env.RAW_SECRET);
 
+  if (!decode) throw new ApiError("Invalid Token", 400);
 
+  const user = await authModel.findById(decode.id);
 
-export const accessTokenController = asyncHandler(async(req, res) => {
-    const {AccessToken,user} = await accessTokenService(req.cookies.refreshToken)
+  res.render("update.ejs", { userid: user._id });
+});
 
-    res.cookie("accessToken",AccessToken,{
-        httpOnly:true,
-        secure:true,
-        maxAge:15*60*1000 // 15 minutes
-    })
+export const updatePasswordController = asyncHandler(async (req, res) => {
+  const { newPassword, confirmPassword } = req.body;
+  const userid = req.params.userid;
 
-    return  res.status(200).json(new ApiResponse("refresh Successfully",userData(user)))
-})
+  if (newPassword !== confirmPassword)
+    throw new ApiError("Password Mismatch", 400);
+
+  const User = await authModel.findByIdAndUpdate(
+    userid,
+    {
+      confirmPassword,
+    },
+    {
+      returnDocument: "after",
+    },
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse("Password Updated Successfully", userData(User)));
+});

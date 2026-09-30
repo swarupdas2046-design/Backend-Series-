@@ -1,7 +1,9 @@
 import authModel from "../models/auth.model.js"
 import ApiError from "../utils/apiError.js"
-import { GENERATE_ACCESS_TOKEN, GENERATE_REFRESH_TOKEN } from "../utils/token.js"
+import { GENERATE_ACCESS_TOKEN, GENERATE_Raw_TOKEN, GENERATE_REFRESH_TOKEN } from "../utils/token.js"
 import jwt from 'jsonwebtoken'
+import SendEmail from "./email.service.js"
+import { CheckMailResponse } from "../utils/emailTemplate.js"
 
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
@@ -96,4 +98,21 @@ export const GoogleService = async(profile)=>{
 
     return newUser
     
+}
+
+export const forgotService = async({email})=>{
+    if(!email) throw new ApiError("Please Enter Your Email",400)
+    if(!emailRegex.test(email)) throw new ApiError("Please enter valid email",400)
+
+    const isExisted = await authModel.findOne({email})
+
+    if(!isExisted) throw new ApiError("User not found",404)
+
+    const rawToken = GENERATE_Raw_TOKEN(isExisted._id)
+    
+    const resetLink = `http://localhost:3000/api/auth/reset-password/${rawToken}`
+
+    await SendEmail(isExisted.email,"Please Click on the link to reset your password",CheckMailResponse(isExisted,resetLink))
+
+    return null
 }
