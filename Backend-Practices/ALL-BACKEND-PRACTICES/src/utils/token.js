@@ -12,3 +12,9 @@ export const GENERATE_REFRESH_TOKEN = (userId)=>{
     })
 }
 
+
+export const GENERATE_Raw_TOKEN = (userId)=>{
+    return jwt.sign({id:userId},process.env.RAW_SECRET,{
+        expiresIn:"15Min"
+    })
+}
